@@ -1,4 +1,5 @@
 ﻿using BankingSystem.Data;
+using BankingSystem.Models;
 using BankingSystem.Services;
 using dashboard;
 using System;
@@ -48,20 +49,18 @@ namespace BankingSystem.Forms
             var username = emailtext.Text.Trim();
             var password = passwordtext.Text;
 
-            var dbHelper = new DatabaseHelper(); // Ensure this class has a ConnectionString property
+            var dbHelper = new DatabaseHelper(); 
             var authService = new AuthService(dbHelper);
-           
-            var (success, role) = authService.Login(username, password);
+
+            var (success, role, customer) = authService.Login(username, password);
 
             if (success)
             {
                 MessageBox.Show($"Login successful! Role: {role}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
- 
-                Dashboard dashboard = new Dashboard();
+                Dashboard dashboard = new Dashboard(customer);
                 dashboard.Show();
-
-                this.Hide(); 
+                this.Hide();
             }
             else
             {
