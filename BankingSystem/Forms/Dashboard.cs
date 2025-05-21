@@ -6,6 +6,7 @@ using BankingSystem.Forms;
 using BankingSystem.Data;
 using BankingSystem.Models;
 using System.Data.SQLite;
+using BankingSystem.Services;
 
 namespace dashboard
 {
@@ -24,11 +25,18 @@ namespace dashboard
 
         private Customer _customer;
         private readonly DatabaseHelper _dbHelper;
+        private TransactionService _transactionService;
+        private int _currentAccountId;
         public Dashboard(Customer customer)
         {
             InitializeComponent();
             _customer = customer;
             _dbHelper = new DatabaseHelper();
+            _transactionService = new TransactionService(_dbHelper);
+
+  
+
+
         }
 
 
@@ -64,7 +72,7 @@ namespace dashboard
                 label13.Text = _customer.Email;
                 label22.Text = _customer.Phone;
                 label23.Text = _customer.DateCreated.ToString();
-                //Accoutn information
+                //Account information
                 string query = "SELECT AccountId, AccountType, Balance, DateOpened FROM Accounts WHERE CustomerId = @CustomerId";
 
                 using (var connection = new SQLiteConnection(_dbHelper.ConnectionString))
@@ -77,7 +85,8 @@ namespace dashboard
                     {
                         if (reader.Read())
                         {
-   
+
+                            _currentAccountId = (int)Convert.ToInt64(reader["AccountId"]);
                             label7.Text = $"₱{Convert.ToDecimal(reader["Balance"]):0.00}";
                             label24.Text = reader["AccountId"].ToString();
                             string accountType = reader["AccountType"].ToString();
@@ -99,5 +108,165 @@ namespace dashboard
             }
         }
 
+        private void button2_Click(object sender, EventArgs e) // Deposit
+        {
+
+            if (decimal.TryParse(textBox2.Text, out decimal amount))
+            {
+                string query = "SELECT AccountId, AccountType, Balance, DateOpened FROM Accounts WHERE CustomerId = @CustomerId";
+                using (var connection = new SQLiteConnection(_dbHelper.ConnectionString))
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    connection.Open();
+                    command.Parameters.AddWithValue("@CustomerId", _customer.CustomerId);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+
+                            bool success = _transactionService.Deposit(_currentAccountId, amount, "ATM Deposit");
+
+                            if (success)
+                            {
+                                MessageBox.Show($"Successfully deposited {amount:C}", "Deposit Complete",
+                                             MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                textBox2.Clear();
+                                RefreshAccountBalance(); 
+                            }
+                            else
+                            {
+                                MessageBox.Show("Deposit failed. Please try again.", "Error",
+                                             MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                    }
+
+                }
+
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e) // Withdraw
+        {
+            if (decimal.TryParse(textBox2.Text, out decimal amount))
+            {
+                bool success = _transactionService.Withdraw(_currentAccountId, amount, "ATM Withdrawal");
+
+                if (success)
+                {
+                    MessageBox.Show($"Successfully withdrew {amount:C}", "Withdrawal Complete",
+                                 MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    textBox2.Clear();
+                    RefreshAccountBalance(); // Implement this method to update balance display
+                }
+                else
+                {
+                    MessageBox.Show("Withdrawal failed. Insufficient funds or invalid amount.", "Error",
+                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please enter a valid amount", "Invalid Input",
+                             MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void btntransfer_Click(object sender, EventArgs e)
+        {
+            // You'll need to add UI elements for transfer (destination account and amount)
+            // For example, you might have:
+            // textBoxTransferAmount for the amount
+            // textBoxDestinationAccount for the target account ID
+
+            if (int.TryParse(textBox1.Text, out int targetAccountId) &&
+                decimal.TryParse(textBox2.Text, out decimal amount))
+            {
+                bool success = _transactionService.Transfer(
+                    _currentAccountId,
+                    targetAccountId,
+                    amount,
+                    $"Transfer to account {targetAccountId}");
+
+                if (success)
+                {
+                    MessageBox.Show($"Successfully transferred {amount:C} to account {targetAccountId}",
+                                  "Transfer Complete",
+                                  MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    textBox1.Clear();
+                    textBox2.Clear();
+                    RefreshAccountBalance();
+                }
+                else
+                {
+                    MessageBox.Show("Transfer failed. Insufficient funds or invalid accounts.",
+                                  "Error",
+                                  MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please enter valid account number and amount",
+                              "Invalid Input",
+                              MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void RefreshAccountBalance()
+        {
+            using (var connection = new SQLiteConnection(_dbHelper.ConnectionString))
+            {
+                connection.Open();
+               
+                string sql = "SELECT Balance FROM Accounts WHERE AccountId = @accountId";
+                using (var command = new SQLiteCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("@accountId", _currentAccountId);
+                    var result = command.ExecuteScalar();
+
+                    if (result != null && result != DBNull.Value)
+                    {
+                        decimal balance = Convert.ToDecimal(result);
+                        label7.Text = balance.ToString("C"); // Format as currency
+
+                        // Optional: Change color based on balance
+                        label7.ForeColor = balance >= 0 ? Color.Green : Color.Red;
+                    }
+                    else
+                    {
+                        //label7.Text = "N/A";
+                        label7.Text = _currentAccountId.ToString();
+                        label7.ForeColor = Color.Black;
+                    }
+                }
+            }
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            // Optional: Add input validation
+            // For example, prevent non-numeric input:
+            if (System.Text.RegularExpressions.Regex.IsMatch(textBox2.Text, "[^0-9.]"))
+            {
+                textBox2.Text = textBox2.Text.Remove(textBox2.Text.Length - 1);
+                textBox2.SelectionStart = textBox2.Text.Length;
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }

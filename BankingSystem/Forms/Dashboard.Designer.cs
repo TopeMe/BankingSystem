@@ -36,20 +36,16 @@ namespace dashboard
             this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
             this.label1 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.btntransfer = new System.Windows.Forms.Button();
+            this.label25 = new System.Windows.Forms.Label();
+            this.label24 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
+            this.btntransfer = new System.Windows.Forms.Button();
             this.panel3 = new System.Windows.Forms.Panel();
             this.label2 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.panel4 = new System.Windows.Forms.Panel();
-            this.label19 = new System.Windows.Forms.Label();
-            this.label20 = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
-            this.label18 = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.panel5 = new System.Windows.Forms.Panel();
             this.label23 = new System.Windows.Forms.Label();
@@ -62,13 +58,18 @@ namespace dashboard
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
-            this.label24 = new System.Windows.Forms.Label();
-            this.label25 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
+            this.panel6 = new System.Windows.Forms.Panel();
+            this.button2 = new System.Windows.Forms.Button();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel5.SuspendLayout();
+            this.panel6.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
@@ -83,7 +84,6 @@ namespace dashboard
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1301, 74);
             this.panel1.TabIndex = 0;
-      
             // 
             // label14
             // 
@@ -129,19 +129,27 @@ namespace dashboard
             this.panel2.Size = new System.Drawing.Size(561, 221);
             this.panel2.TabIndex = 1;
             // 
-            // btntransfer
+            // label25
             // 
-            this.btntransfer.BackColor = System.Drawing.SystemColors.HotTrack;
-            this.btntransfer.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btntransfer.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btntransfer.ForeColor = System.Drawing.Color.White;
-            this.btntransfer.Location = new System.Drawing.Point(207, 133);
-            this.btntransfer.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btntransfer.Name = "btntransfer";
-            this.btntransfer.Size = new System.Drawing.Size(186, 41);
-            this.btntransfer.TabIndex = 8;
-            this.btntransfer.Text = "Transfer Funds";
-            this.btntransfer.UseVisualStyleBackColor = false;
+            this.label25.AutoSize = true;
+            this.label25.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label25.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.label25.Location = new System.Drawing.Point(27, 185);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(121, 20);
+            this.label25.TabIndex = 8;
+            this.label25.Text = "Account Number";
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label24.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.label24.Location = new System.Drawing.Point(26, 146);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(173, 28);
+            this.label24.TabIndex = 7;
+            this.label24.Text = "Account Number";
             // 
             // label6
             // 
@@ -175,6 +183,22 @@ namespace dashboard
             this.label7.Size = new System.Drawing.Size(227, 59);
             this.label7.TabIndex = 4;
             this.label7.Text = "₱0.00 PHP";
+            this.label7.Click += new System.EventHandler(this.label7_Click);
+            // 
+            // btntransfer
+            // 
+            this.btntransfer.BackColor = System.Drawing.SystemColors.HotTrack;
+            this.btntransfer.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btntransfer.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btntransfer.ForeColor = System.Drawing.Color.White;
+            this.btntransfer.Location = new System.Drawing.Point(207, 133);
+            this.btntransfer.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btntransfer.Name = "btntransfer";
+            this.btntransfer.Size = new System.Drawing.Size(186, 41);
+            this.btntransfer.TabIndex = 8;
+            this.btntransfer.Text = "Transfer Funds";
+            this.btntransfer.UseVisualStyleBackColor = false;
+            this.btntransfer.Click += new System.EventHandler(this.btntransfer_Click);
             // 
             // panel3
             // 
@@ -193,7 +217,7 @@ namespace dashboard
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Segoe UI", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label2.Location = new System.Drawing.Point(24, 19);
+            this.label2.Location = new System.Drawing.Point(20, 19);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(241, 38);
             this.label2.TabIndex = 9;
@@ -202,93 +226,23 @@ namespace dashboard
             // textBox1
             // 
             this.textBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 19.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBox1.Location = new System.Drawing.Point(21, 73);
+            this.textBox1.Location = new System.Drawing.Point(27, 73);
             this.textBox1.Margin = new System.Windows.Forms.Padding(4);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(372, 45);
+            this.textBox1.Size = new System.Drawing.Size(366, 45);
             this.textBox1.TabIndex = 5;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // panel4
             // 
             this.panel4.BackColor = System.Drawing.Color.White;
-            this.panel4.Controls.Add(this.label19);
-            this.panel4.Controls.Add(this.label20);
-            this.panel4.Controls.Add(this.label21);
-            this.panel4.Controls.Add(this.label18);
-            this.panel4.Controls.Add(this.label17);
-            this.panel4.Controls.Add(this.label16);
+            this.panel4.Controls.Add(this.tableLayoutPanel1);
             this.panel4.Controls.Add(this.label15);
             this.panel4.Location = new System.Drawing.Point(171, 362);
             this.panel4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(561, 270);
+            this.panel4.Size = new System.Drawing.Size(561, 429);
             this.panel4.TabIndex = 3;
-            // 
-            // label19
-            // 
-            this.label19.AutoSize = true;
-            this.label19.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label19.ForeColor = System.Drawing.Color.ForestGreen;
-            this.label19.Location = new System.Drawing.Point(433, 127);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(104, 28);
-            this.label19.TabIndex = 12;
-            this.label19.Text = "+₱220.00";
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label20.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.label20.Location = new System.Drawing.Point(35, 166);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(113, 20);
-            this.label20.TabIndex = 11;
-            this.label20.Text = "20 Mar . Refund";
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label21.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label21.Location = new System.Drawing.Point(24, 122);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(214, 28);
-            this.label21.TabIndex = 10;
-            this.label21.Text = "www.nameblank.com";
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label18.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label18.Location = new System.Drawing.Point(405, 44);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(131, 28);
-            this.label18.TabIndex = 8;
-            this.label18.Text = "-$13.20 USD";
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.label17.Location = new System.Drawing.Point(25, 82);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(122, 20);
-            this.label17.TabIndex = 7;
-            this.label17.Text = "28 Mar . Payment";
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label16.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label16.Location = new System.Drawing.Point(24, 44);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(160, 28);
-            this.label16.TabIndex = 5;
-            this.label16.Text = "Nameblank, Inc";
             // 
             // label15
             // 
@@ -297,9 +251,9 @@ namespace dashboard
             this.label15.ForeColor = System.Drawing.SystemColors.HotTrack;
             this.label15.Location = new System.Drawing.Point(16, 10);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(154, 28);
+            this.label15.Size = new System.Drawing.Size(101, 28);
             this.label15.TabIndex = 3;
-            this.label15.Text = "Recent activity";
+            this.label15.Text = "Activities";
             // 
             // panel5
             // 
@@ -314,10 +268,10 @@ namespace dashboard
             this.panel5.Controls.Add(this.label4);
             this.panel5.Controls.Add(this.label3);
             this.panel5.Controls.Add(this.label12);
-            this.panel5.Location = new System.Drawing.Point(756, 352);
+            this.panel5.Location = new System.Drawing.Point(752, 564);
             this.panel5.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(415, 260);
+            this.panel5.Size = new System.Drawing.Size(419, 227);
             this.panel5.TabIndex = 13;
             // 
             // label23
@@ -431,34 +385,91 @@ namespace dashboard
             this.label12.TabIndex = 3;
             this.label12.Text = "Personal Information";
             // 
-            // label24
+            // button1
             // 
-            this.label24.AutoSize = true;
-            this.label24.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label24.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label24.Location = new System.Drawing.Point(26, 146);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(173, 28);
-            this.label24.TabIndex = 7;
-            this.label24.Text = "Account Number";
+            this.button1.BackColor = System.Drawing.SystemColors.HotTrack;
+            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.ForeColor = System.Drawing.Color.White;
+            this.button1.Location = new System.Drawing.Point(258, 139);
+            this.button1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(135, 41);
+            this.button1.TabIndex = 10;
+            this.button1.Text = "Withdraw";
+            this.button1.UseVisualStyleBackColor = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // label25
+            // panel6
             // 
-            this.label25.AutoSize = true;
-            this.label25.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label25.ForeColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.label25.Location = new System.Drawing.Point(27, 185);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(121, 20);
-            this.label25.TabIndex = 8;
-            this.label25.Text = "Account Number";
+            this.panel6.BackColor = System.Drawing.Color.White;
+            this.panel6.Controls.Add(this.button2);
+            this.panel6.Controls.Add(this.textBox2);
+            this.panel6.Controls.Add(this.label16);
+            this.panel6.Controls.Add(this.button1);
+            this.panel6.Location = new System.Drawing.Point(752, 346);
+            this.panel6.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.panel6.Name = "panel6";
+            this.panel6.Size = new System.Drawing.Size(419, 193);
+            this.panel6.TabIndex = 14;
+            // 
+            // button2
+            // 
+            this.button2.BackColor = System.Drawing.SystemColors.HotTrack;
+            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button2.ForeColor = System.Drawing.Color.White;
+            this.button2.Location = new System.Drawing.Point(136, 139);
+            this.button2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(116, 41);
+            this.button2.TabIndex = 11;
+            this.button2.Text = "Deposit";
+            this.button2.UseVisualStyleBackColor = false;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // textBox2
+            // 
+            this.textBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 19.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.textBox2.Location = new System.Drawing.Point(27, 78);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(4);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(366, 45);
+            this.textBox2.TabIndex = 10;
+            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Segoe UI", 16.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label16.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.label16.Location = new System.Drawing.Point(20, 19);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(125, 38);
+            this.label16.TabIndex = 10;
+            this.label16.Text = "Amount";
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(31, 71);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(200, 100);
+            this.tableLayoutPanel1.TabIndex = 4;
+            this.tableLayoutPanel1.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel1_Paint);
             // 
             // Dashboard
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.ClientSize = new System.Drawing.Size(1303, 734);
+            this.ClientSize = new System.Drawing.Size(1307, 802);
+            this.Controls.Add(this.panel6);
             this.Controls.Add(this.panel5);
             this.Controls.Add(this.panel4);
             this.Controls.Add(this.panel3);
@@ -478,6 +489,8 @@ namespace dashboard
             this.panel4.PerformLayout();
             this.panel5.ResumeLayout(false);
             this.panel5.PerformLayout();
+            this.panel6.ResumeLayout(false);
+            this.panel6.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -496,12 +509,6 @@ namespace dashboard
         private Button btntransfer;
         private Panel panel4;
         private Label label15;
-        private Label label16;
-        private Label label19;
-        private Label label20;
-        private Label label21;
-        private Label label18;
-        private Label label17;
         private TextBox textBox1;
         private Label label2;
         private Panel panel5;
@@ -517,5 +524,11 @@ namespace dashboard
         private Label label23;
         private Label label25;
         private Label label24;
+        private Button button1;
+        private Panel panel6;
+        private Button button2;
+        private TextBox textBox2;
+        private Label label16;
+        private TableLayoutPanel tableLayoutPanel1;
     }
 }
