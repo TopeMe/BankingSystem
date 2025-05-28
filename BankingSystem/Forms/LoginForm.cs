@@ -35,6 +35,7 @@ namespace BankingSystem.Forms
         {
             InitializeComponent();
             _dbHelper = dbHelper;
+            this.MaximizeBox = false;
         }
 
         private void Form1_Load(object sender, EventArgs e)

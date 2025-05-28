@@ -138,6 +138,7 @@ namespace BankingSystem.Forms
             this.passwordtext.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.passwordtext.Multiline = true;
             this.passwordtext.Name = "passwordtext";
+            this.passwordtext.PasswordChar = '*';  // This is the line to add
             this.passwordtext.Size = new System.Drawing.Size(374, 34);
             this.passwordtext.TabIndex = 4;
             // 

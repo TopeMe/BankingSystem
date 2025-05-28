@@ -29,12 +29,13 @@ namespace dashboard
         private int _currentAccountId;
         public Dashboard(Customer customer)
         {
+            this.MaximizeBox = false;
             InitializeComponent();
             _customer = customer;
             _dbHelper = new DatabaseHelper();
             _transactionService = new TransactionService(_dbHelper);
+            dataGridView1.CellFormatting += dataGridView1_CellFormatting;
 
-  
 
 
         }
@@ -58,21 +59,23 @@ namespace dashboard
         {
 
         }
-
         private void Dashboard_Load(object sender, EventArgs e)
         {
             panel2.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel2.Width, panel2.Height, 30, 30));
             panel3.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel3.Width, panel3.Height, 30, 30));
             panel4.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel4.Width, panel4.Height, 30, 30));
+            panel6.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel6.Width, panel6.Height, 30, 30));
+            panel5.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel5.Width, panel5.Height, 30, 30));
             if (_customer != null)
             {
-                //User information
+                // User information
                 label11.Text = _customer.FirstName;
                 label4.Text = _customer.LastName;
                 label13.Text = _customer.Email;
                 label22.Text = _customer.Phone;
                 label23.Text = _customer.DateCreated.ToString();
-                //Account information
+
+                // Account information
                 string query = "SELECT AccountId, AccountType, Balance, DateOpened FROM Accounts WHERE CustomerId = @CustomerId";
 
                 using (var connection = new SQLiteConnection(_dbHelper.ConnectionString))
@@ -85,22 +88,20 @@ namespace dashboard
                     {
                         if (reader.Read())
                         {
-
                             _currentAccountId = (int)Convert.ToInt64(reader["AccountId"]);
                             label7.Text = $"₱{Convert.ToDecimal(reader["Balance"]):0.00}";
                             label24.Text = reader["AccountId"].ToString();
-                            string accountType = reader["AccountType"].ToString();
-                            DateTime dateOpened = Convert.ToDateTime(reader["DateOpened"]);
+
+                            // Load transaction history after setting the account ID
+                            LoadTransactionHistory();
                         }
                         else
                         {
-      
                             label7.Text = "₱0.00";
                             label24.Text = "N/A";
                         }
                     }
                 }
-
             }
             else
             {
@@ -129,10 +130,11 @@ namespace dashboard
 
                             if (success)
                             {
-                                MessageBox.Show($"Successfully deposited {amount:C}", "Deposit Complete",
+                                MessageBox.Show($"Successfully deposited ₱{amount:0.00}", "Deposit Complete",
                                              MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 textBox2.Clear();
-                                RefreshAccountBalance(); 
+                                RefreshAccountBalance();
+                                LoadTransactionHistory();
                             }
                             else
                             {
@@ -155,10 +157,11 @@ namespace dashboard
 
                 if (success)
                 {
-                    MessageBox.Show($"Successfully withdrew {amount:C}", "Withdrawal Complete",
+                    MessageBox.Show($"Successfully withdrew ₱{amount:0.00}", "Withdrawal Complete",
                                  MessageBoxButtons.OK, MessageBoxIcon.Information);
                     textBox2.Clear();
                     RefreshAccountBalance(); // Implement this method to update balance display
+                    LoadTransactionHistory();
                 }
                 else
                 {
@@ -181,7 +184,7 @@ namespace dashboard
             // textBoxDestinationAccount for the target account ID
 
             if (int.TryParse(textBox1.Text, out int targetAccountId) &&
-                decimal.TryParse(textBox2.Text, out decimal amount))
+                decimal.TryParse(textBox3.Text, out decimal amount))
             {
                 bool success = _transactionService.Transfer(
                     _currentAccountId,
@@ -191,12 +194,13 @@ namespace dashboard
 
                 if (success)
                 {
-                    MessageBox.Show($"Successfully transferred {amount:C} to account {targetAccountId}",
+                    MessageBox.Show($"Successfully transferred ₱{amount:0.00} to account {targetAccountId}",
                                   "Transfer Complete",
                                   MessageBoxButtons.OK, MessageBoxIcon.Information);
                     textBox1.Clear();
-                    textBox2.Clear();
+                    textBox3.Clear();
                     RefreshAccountBalance();
+                    LoadTransactionHistory();
                 }
                 else
                 {
@@ -228,10 +232,10 @@ namespace dashboard
                     if (result != null && result != DBNull.Value)
                     {
                         decimal balance = Convert.ToDecimal(result);
-                        label7.Text = balance.ToString("C"); // Format as currency
+                        label7.Text = balance.ToString("C", new System.Globalization.CultureInfo("en-PH")); // Format as currency
 
                         // Optional: Change color based on balance
-                        label7.ForeColor = balance >= 0 ? Color.Green : Color.Red;
+                        //label7.ForeColor = balance >= 0 ? Color.Green : Color.Red;
                     }
                     else
                     {
@@ -240,6 +244,77 @@ namespace dashboard
                         label7.ForeColor = Color.Black;
                     }
                 }
+            }
+        }
+        private void LoadTransactionHistory()
+        {
+            try
+            {
+                // Get transactions for the current account
+                var transactions = _transactionService.GetAccountTransactions(_currentAccountId);
+
+                // Bind to DataGridView
+                dataGridView1.AutoGenerateColumns = false; // We'll define columns manually for better control
+                dataGridView1.DataSource = transactions;
+
+                // Clear existing columns if any
+                dataGridView1.Columns.Clear();
+
+                // Add columns manually
+                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
+                {
+                    DataPropertyName = "TransactionDate",
+                    HeaderText = "Date",
+                    Name = "colDate",
+                    Width = 150,
+                    DefaultCellStyle = new DataGridViewCellStyle()
+                    {
+                        Format = "g" // General date/time pattern
+                    }
+                });
+
+                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
+                {
+                    DataPropertyName = "TransactionType",
+                    HeaderText = "Type",
+                    Name = "colType",
+                    Width = 100
+                });
+
+                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
+                {
+                    DataPropertyName = "Amount",
+                    HeaderText = "Amount",
+                    Name = "colAmount",
+                    Width = 120,
+                    DefaultCellStyle = new DataGridViewCellStyle()
+                    {
+                        Format = "\"₱\"#,##0.00", // Custom format with ₱
+                        Alignment = DataGridViewContentAlignment.MiddleRight,
+                        NullValue = "₱0.00"
+                    }
+                });
+
+                dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
+                {
+                    DataPropertyName = "Description",
+                    HeaderText = "Description",
+                    Name = "colDescription",
+                    AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+                });
+
+                // Optional: Style the grid
+                dataGridView1.EnableHeadersVisualStyles = false;
+                dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = Color.Navy;
+                dataGridView1.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+                dataGridView1.ColumnHeadersDefaultCellStyle.Font = new Font(dataGridView1.Font, FontStyle.Bold);
+                dataGridView1.RowHeadersVisible = false;
+                dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading transaction history: {ex.Message}", "Error",
+                              MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -265,6 +340,38 @@ namespace dashboard
         }
 
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void panel4_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (dataGridView1.Columns[e.ColumnIndex].Name == "colAmount" && e.Value != null)
+            {
+                var row = dataGridView1.Rows[e.RowIndex];
+                if (row.Cells["colType"].Value?.ToString() == "Withdrawal")
+                {
+                    e.CellStyle.ForeColor = Color.Red;
+                    
+                }
+                else
+                {
+                    e.CellStyle.ForeColor = Color.Green;
+                }
+            }
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
         {
 
         }
