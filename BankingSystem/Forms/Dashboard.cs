@@ -306,7 +306,7 @@ namespace dashboard
                     AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
                 });
 
-                // Optional: Style the grid
+                
                 dataGridView1.EnableHeadersVisualStyles = false;
                 dataGridView1.ColumnHeadersDefaultCellStyle.BackColor = Color.Navy;
                 dataGridView1.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
@@ -377,5 +377,24 @@ namespace dashboard
         {
 
         }
+        private void NumericTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+           
+            if (char.IsControl(e.KeyChar))
+                return;
+
+            TextBox txt = sender as TextBox;
+
+            if (char.IsDigit(e.KeyChar))
+                return;
+
+           
+            if (e.KeyChar == '.' && !txt.Text.Contains("."))
+                return;
+
+            e.Handled = true;
+        }
+
+
     }
 }
