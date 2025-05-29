@@ -75,22 +75,23 @@ namespace BankingSystem.Forms
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Segoe UI", 36F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.SystemColors.Control;
-            this.label5.Location = new System.Drawing.Point(35, 39);
+            this.label5.Location = new System.Drawing.Point(79, 52);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(356, 81);
+            this.label5.Size = new System.Drawing.Size(275, 81);
             this.label5.TabIndex = 9;
-            this.label5.Text = "PHB Online";
+            this.label5.Text = "PH Bank";
+            this.label5.Click += new System.EventHandler(this.label5_Click);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI", 24F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.label1.Location = new System.Drawing.Point(413, 52);
+            this.label1.Location = new System.Drawing.Point(442, 52);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(487, 54);
+            this.label1.Size = new System.Drawing.Size(420, 54);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Welcome to PHB Online!";
+            this.label1.Text = "Welcome to PH Bank";
             // 
             // emailtext
             // 

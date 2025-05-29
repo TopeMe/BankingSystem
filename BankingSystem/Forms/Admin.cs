@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SQLite;
+using System.Drawing;
 using System.Windows.Forms;
 using BankingSystem.Data;
 
@@ -221,6 +222,210 @@ namespace BankingSystem.Forms
             LoginForm loginForm = new LoginForm(dbHelper);
             loginForm.Show();
             this.Close();
+        }
+
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            // Create the form
+            Form createUserAccountForm = new Form()
+            {
+                Text = "Create New User & Account",
+                Width = 450,
+                Height = 500,
+                FormBorderStyle = FormBorderStyle.FixedDialog,
+                StartPosition = FormStartPosition.CenterParent,
+                MaximizeBox = false,
+                MinimizeBox = false
+            };
+
+            // Create controls for User Information
+            Label lblUserInfo = new Label() { Text = "User Information", Left = 20, Top = 20, Width = 400, Font = new Font(Font, FontStyle.Bold) };
+
+            Label lblFirstName = new Label() { Text = "First Name:", Left = 20, Top = 50, Width = 100 };
+            TextBox txtFirstName = new TextBox() { Left = 150, Top = 50, Width = 250 };
+
+            Label lblLastName = new Label() { Text = "Last Name:", Left = 20, Top = 80, Width = 100 };
+            TextBox txtLastName = new TextBox() { Left = 150, Top = 80, Width = 250 };
+
+            Label lblEmail = new Label() { Text = "Email:", Left = 20, Top = 110, Width = 100 };
+            TextBox txtEmail = new TextBox() { Left = 150, Top = 110, Width = 250 };
+
+            Label lblPhone = new Label() { Text = "Phone:", Left = 20, Top = 140, Width = 100 };
+            MaskedTextBox mtxtPhone = new MaskedTextBox()
+            {
+                Left = 150,
+                Top = 140,
+                Width = 250,
+                Mask = "00000000000", // Exactly 11 digits
+                PromptChar = ' '      // Shows spaces instead of underscores
+            };
+
+            Label lblUsername = new Label() { Text = "Username:", Left = 20, Top = 170, Width = 100 };
+            TextBox txtUsername = new TextBox() { Left = 150, Top = 170, Width = 250 };
+
+            Label lblPassword = new Label() { Text = "Password:", Left = 20, Top = 200, Width = 100 };
+            TextBox txtPassword = new TextBox() { Left = 150, Top = 200, Width = 250, PasswordChar = '*' };
+
+            // Create controls for Account Information
+            Label lblAccountInfo = new Label() { Text = "Account Information", Left = 20, Top = 240, Width = 400, Font = new Font(Font, FontStyle.Bold) };
+
+            Label lblAccountType = new Label() { Text = "Account Type:", Left = 20, Top = 270, Width = 100 };
+            ComboBox cmbAccountType = new ComboBox() { Left = 150, Top = 270, Width = 250 };
+            cmbAccountType.Items.AddRange(new string[] { "Savings", "Checking", "Investment" });
+
+            Label lblInitialDeposit = new Label() { Text = "Initial Deposit:", Left = 20, Top = 300, Width = 100 };
+            NumericUpDown numInitialDeposit = new NumericUpDown() { Left = 150, Top = 300, Width = 250, Minimum = 0, Maximum = 1000000, DecimalPlaces = 2 };
+
+            // Create buttons
+            Button btnCreate = new Button() { Text = "Create", Left = 150, Top = 350, Width = 100, DialogResult = DialogResult.OK };
+            Button btnCancel = new Button() { Text = "Cancel", Left = 270, Top = 350, Width = 100, DialogResult = DialogResult.Cancel };
+
+            // Add controls to form
+            createUserAccountForm.Controls.AddRange(new Control[] {
+        lblUserInfo,
+        lblFirstName, txtFirstName,
+        lblLastName, txtLastName,
+        lblEmail, txtEmail,
+        lblPhone, mtxtPhone,
+        lblUsername, txtUsername,
+        lblPassword, txtPassword,
+        lblAccountInfo,
+        lblAccountType, cmbAccountType,
+        lblInitialDeposit, numInitialDeposit,
+        btnCreate, btnCancel
+    });
+
+            // Show dialog and process result
+            if (createUserAccountForm.ShowDialog() == DialogResult.OK)
+            {
+                // Validate required fields
+                if (string.IsNullOrWhiteSpace(txtFirstName.Text) ||
+                    string.IsNullOrWhiteSpace(txtLastName.Text) ||
+                    string.IsNullOrWhiteSpace(txtEmail.Text) ||
+                    string.IsNullOrWhiteSpace(txtUsername.Text) ||
+                    string.IsNullOrWhiteSpace(txtPassword.Text) ||
+                    string.IsNullOrWhiteSpace(cmbAccountType.Text))
+                {
+                    MessageBox.Show("Please fill in all required fields", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Email validation
+                if (!txtEmail.Text.Contains("@") || !txtEmail.Text.Contains("."))
+                {
+                    MessageBox.Show("Please enter a valid email address", "Invalid Email", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Phone validation (exactly 11 digits)
+                if (!mtxtPhone.MaskCompleted)
+                {
+                    MessageBox.Show("Phone number must be exactly 11 digits", "Invalid Phone", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Password validation (minimum 8 characters)
+                if (txtPassword.Text.Length < 8)
+                {
+                    MessageBox.Show("Password must be at least 8 characters long", "Invalid Password", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                try
+                {
+                    using (var connection = new SQLiteConnection(_dbHelper.ConnectionString))
+                    {
+                        connection.Open();
+                        using (var transaction = connection.BeginTransaction())
+                        {
+                            try
+                            {
+                                // Check if email already exists
+                                using (var emailCheckCommand = new SQLiteCommand(
+                                    "SELECT COUNT(*) FROM Customers WHERE Email = @email",
+                                    connection, transaction))
+                                {
+                                    emailCheckCommand.Parameters.AddWithValue("@email", txtEmail.Text);
+                                    int emailCount = Convert.ToInt32(emailCheckCommand.ExecuteScalar());
+                                    if (emailCount > 0)
+                                    {
+                                        MessageBox.Show("This email is already registered", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        return;
+                                    }
+                                }
+
+                                // Check if username already exists
+                                using (var userCheckCommand = new SQLiteCommand(
+                                    "SELECT COUNT(*) FROM Users WHERE Username = @username",
+                                    connection, transaction))
+                                {
+                                    userCheckCommand.Parameters.AddWithValue("@username", txtUsername.Text);
+                                    int userCount = Convert.ToInt32(userCheckCommand.ExecuteScalar());
+                                    if (userCount > 0)
+                                    {
+                                        MessageBox.Show("This username is already taken", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        return;
+                                    }
+                                }
+
+                                // 1. Create Customer
+                                int newCustomerId;
+                                using (var customerCommand = new SQLiteCommand(
+                                    @"INSERT INTO Customers (FirstName, LastName, Email, Phone) 
+                              VALUES (@firstName, @lastName, @email, @phone);
+                              SELECT last_insert_rowid();",
+                                    connection, transaction))
+                                {
+                                    customerCommand.Parameters.AddWithValue("@firstName", txtFirstName.Text);
+                                    customerCommand.Parameters.AddWithValue("@lastName", txtLastName.Text);
+                                    customerCommand.Parameters.AddWithValue("@email", txtEmail.Text);
+                                    customerCommand.Parameters.AddWithValue("@phone", mtxtPhone.Text); // Get the masked text value
+                                    newCustomerId = Convert.ToInt32(customerCommand.ExecuteScalar());
+                                }
+
+                                // 2. Create User (with hashed password)
+                                using (var userCommand = new SQLiteCommand(
+                                    @"INSERT INTO Users (CustomerId, Username, Password, Role) 
+                              VALUES (@customerId, @username, @password, 'Customer')",
+                                    connection, transaction))
+                                {
+                                    string hashedPassword = txtPassword.Text;
+
+                                    userCommand.Parameters.AddWithValue("@customerId", newCustomerId);
+                                    userCommand.Parameters.AddWithValue("@username", txtUsername.Text);
+                                    userCommand.Parameters.AddWithValue("@password", hashedPassword);
+                                    userCommand.ExecuteNonQuery();
+                                }
+
+                                // 3. Create Account
+                                using (var accountCommand = new SQLiteCommand(
+                                    @"INSERT INTO Accounts (CustomerId, AccountType, Balance) 
+                              VALUES (@customerId, @accountType, @balance)",
+                                    connection, transaction))
+                                {
+                                    accountCommand.Parameters.AddWithValue("@customerId", newCustomerId);
+                                    accountCommand.Parameters.AddWithValue("@accountType", cmbAccountType.Text);
+                                    accountCommand.Parameters.AddWithValue("@balance", numInitialDeposit.Value);
+                                    accountCommand.ExecuteNonQuery();
+                                }
+
+                                transaction.Commit();
+                                MessageBox.Show("User and account created successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                            catch (Exception ex)
+                            {
+                                transaction.Rollback();
+                                MessageBox.Show("Error creating user and account: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Database error: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
     }
 }
