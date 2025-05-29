@@ -271,7 +271,7 @@ namespace BankingSystem.Forms
             Label lblPassword = new Label() { Text = "Password:", Left = 20, Top = 200, Width = 100 };
             TextBox txtPassword = new TextBox() { Left = 150, Top = 200, Width = 250, PasswordChar = '*' };
 
-            // Create controls for Account Information
+            
             Label lblAccountInfo = new Label() { Text = "Account Information", Left = 20, Top = 240, Width = 400, Font = new Font(Font, FontStyle.Bold) };
 
             Label lblAccountType = new Label() { Text = "Account Type:", Left = 20, Top = 270, Width = 100 };

@@ -11,7 +11,7 @@ namespace BankingSystem.Data
 
         public DatabaseHelper(string dbPath = "BankingSystem.db")
         {
-            // Add these important connection string parameters:
+            
             _connectionString = $"Data Source={dbPath};Version=3;Journal Mode=WAL;Pooling=True;Foreign Keys=True;";
 
             InitializeDatabase();
@@ -19,10 +19,10 @@ namespace BankingSystem.Data
 
         private void InitializeDatabase()
         {
-            // Use a single connection for initialization
+            
             using (var connection = CreateConnection())
             {
-                // Enable foreign key support (important for your relationships)
+               
                 ExecuteNonQuery(connection, "PRAGMA foreign_keys = ON;");
 
                 ExecuteNonQuery(connection, @"
@@ -83,7 +83,6 @@ namespace BankingSystem.Data
             }
         }
 
-        // For external use when a shared connection is needed
         public SQLiteConnection GetSharedConnection()
         {
             if (_sharedConnection == null)
