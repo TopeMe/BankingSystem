@@ -227,7 +227,7 @@ namespace BankingSystem.Forms
 
         private void button2_Click(object sender, EventArgs e)
         {
-            // Create the form
+            
             Form createUserAccountForm = new Form()
             {
                 Text = "Create New User & Account",
@@ -238,8 +238,10 @@ namespace BankingSystem.Forms
                 MaximizeBox = false,
                 MinimizeBox = false
             };
+            Label lblEmailStatus = new Label() { Left = 410, Top = 110, Width = 30, Text = "❌" };
+            Label lblPhoneStatus = new Label() { Left = 410, Top = 140, Width = 30, Text = "❌" };
+            Label lblPasswordStatus = new Label() { Left = 410, Top = 200, Width = 30, Text = "❌" };
 
-            // Create controls for User Information
             Label lblUserInfo = new Label() { Text = "User Information", Left = 20, Top = 20, Width = 400, Font = new Font(Font, FontStyle.Bold) };
 
             Label lblFirstName = new Label() { Text = "First Name:", Left = 20, Top = 50, Width = 100 };
@@ -257,8 +259,10 @@ namespace BankingSystem.Forms
                 Left = 150,
                 Top = 140,
                 Width = 250,
-                Mask = "00000000000", // Exactly 11 digits
-                PromptChar = ' '      // Shows spaces instead of underscores
+                Mask = "00000000000",
+                PromptChar = ' ',
+                Text = "09",
+                HidePromptOnLeave = true
             };
 
             Label lblUsername = new Label() { Text = "Username:", Left = 20, Top = 170, Width = 100 };
@@ -272,34 +276,67 @@ namespace BankingSystem.Forms
 
             Label lblAccountType = new Label() { Text = "Account Type:", Left = 20, Top = 270, Width = 100 };
             ComboBox cmbAccountType = new ComboBox() { Left = 150, Top = 270, Width = 250 };
-            cmbAccountType.Items.AddRange(new string[] { "Savings", "Checking", "Investment" });
+            cmbAccountType.Items.AddRange(new string[] { "Savings", "Checking" });
 
             Label lblInitialDeposit = new Label() { Text = "Initial Deposit:", Left = 20, Top = 300, Width = 100 };
             NumericUpDown numInitialDeposit = new NumericUpDown() { Left = 150, Top = 300, Width = 250, Minimum = 0, Maximum = 1000000, DecimalPlaces = 2 };
 
-            // Create buttons
             Button btnCreate = new Button() { Text = "Create", Left = 150, Top = 350, Width = 100, DialogResult = DialogResult.OK };
             Button btnCancel = new Button() { Text = "Cancel", Left = 270, Top = 350, Width = 100, DialogResult = DialogResult.Cancel };
 
-            // Add controls to form
+            
             createUserAccountForm.Controls.AddRange(new Control[] {
-        lblUserInfo,
-        lblFirstName, txtFirstName,
-        lblLastName, txtLastName,
-        lblEmail, txtEmail,
-        lblPhone, mtxtPhone,
-        lblUsername, txtUsername,
-        lblPassword, txtPassword,
-        lblAccountInfo,
-        lblAccountType, cmbAccountType,
-        lblInitialDeposit, numInitialDeposit,
-        btnCreate, btnCancel
-    });
+                lblUserInfo,
+                lblFirstName, txtFirstName,
+                lblLastName, txtLastName,
+                lblEmail, txtEmail,
+                lblPhone, mtxtPhone,
+                lblUsername, txtUsername,
+                lblPassword, txtPassword,
+                lblAccountInfo,
+                lblAccountType, cmbAccountType,
+                lblInitialDeposit, numInitialDeposit,
+                btnCreate, btnCancel,
+                lblEmailStatus, lblPhoneStatus, lblPasswordStatus
+            });
 
-            // Show dialog and process result
+            mtxtPhone.Enter += (s, eventArgs) =>
+            {
+                mtxtPhone.SelectionStart = 2;
+            };
+
+
+            mtxtPhone.KeyDown += (s, keyEventArgs) =>
+            {
+                if (mtxtPhone.SelectionStart < 2)
+                {
+                    keyEventArgs.SuppressKeyPress = true;
+                }
+            };
+            {
+                mtxtPhone.SelectionStart = 2;
+            };
+
+
+            txtEmail.TextChanged += (s, emailEventArgs) =>
+            {
+                lblEmailStatus.Text = (txtEmail.Text.Contains("@") && txtEmail.Text.Contains(".")) ? "✅" : "❌";
+            };
+
+            mtxtPhone.TextChanged += (s, phoneEventArgs) =>
+            {
+                lblPhoneStatus.Text = mtxtPhone.MaskCompleted ? "✅" : "❌";
+            };
+
+            txtPassword.TextChanged += (s, passwordEventArgs) =>
+            {
+                lblPasswordStatus.Text = txtPassword.Text.Length >= 8 ? "✅" : "❌";
+            };
+
+
             if (createUserAccountForm.ShowDialog() == DialogResult.OK)
             {
-                // Validate required fields
+                
                 if (string.IsNullOrWhiteSpace(txtFirstName.Text) ||
                     string.IsNullOrWhiteSpace(txtLastName.Text) ||
                     string.IsNullOrWhiteSpace(txtEmail.Text) ||
@@ -311,21 +348,21 @@ namespace BankingSystem.Forms
                     return;
                 }
 
-                // Email validation
+                
                 if (!txtEmail.Text.Contains("@") || !txtEmail.Text.Contains("."))
                 {
                     MessageBox.Show("Please enter a valid email address", "Invalid Email", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
-                // Phone validation (exactly 11 digits)
+                
                 if (!mtxtPhone.MaskCompleted)
                 {
                     MessageBox.Show("Phone number must be exactly 11 digits", "Invalid Phone", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
-                // Password validation (minimum 8 characters)
+                
                 if (txtPassword.Text.Length < 8)
                 {
                     MessageBox.Show("Password must be at least 8 characters long", "Invalid Password", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -341,7 +378,7 @@ namespace BankingSystem.Forms
                         {
                             try
                             {
-                                // Check if email already exists
+                                
                                 using (var emailCheckCommand = new SQLiteCommand(
                                     "SELECT COUNT(*) FROM Customers WHERE Email = @email",
                                     connection, transaction))
@@ -355,7 +392,7 @@ namespace BankingSystem.Forms
                                     }
                                 }
 
-                                // Check if username already exists
+                                
                                 using (var userCheckCommand = new SQLiteCommand(
                                     "SELECT COUNT(*) FROM Users WHERE Username = @username",
                                     connection, transaction))
@@ -369,7 +406,7 @@ namespace BankingSystem.Forms
                                     }
                                 }
 
-                                // 1. Create Customer
+                                
                                 int newCustomerId;
                                 using (var customerCommand = new SQLiteCommand(
                                     @"INSERT INTO Customers (FirstName, LastName, Email, Phone) 
@@ -380,11 +417,11 @@ namespace BankingSystem.Forms
                                     customerCommand.Parameters.AddWithValue("@firstName", txtFirstName.Text);
                                     customerCommand.Parameters.AddWithValue("@lastName", txtLastName.Text);
                                     customerCommand.Parameters.AddWithValue("@email", txtEmail.Text);
-                                    customerCommand.Parameters.AddWithValue("@phone", mtxtPhone.Text); // Get the masked text value
+                                    customerCommand.Parameters.AddWithValue("@phone", mtxtPhone.Text); 
                                     newCustomerId = Convert.ToInt32(customerCommand.ExecuteScalar());
                                 }
 
-                                // 2. Create User (with hashed password)
+                                
                                 using (var userCommand = new SQLiteCommand(
                                     @"INSERT INTO Users (CustomerId, Username, Password, Role) 
                               VALUES (@customerId, @username, @password, 'Customer')",
@@ -398,7 +435,7 @@ namespace BankingSystem.Forms
                                     userCommand.ExecuteNonQuery();
                                 }
 
-                                // 3. Create Account
+                                
                                 using (var accountCommand = new SQLiteCommand(
                                     @"INSERT INTO Accounts (CustomerId, AccountType, Balance) 
                               VALUES (@customerId, @accountType, @balance)",

@@ -1,4 +1,6 @@
-﻿namespace BankingSystem.Forms
+﻿using System.Windows.Forms;
+
+namespace BankingSystem.Forms
 {
     partial class Admin
     {
@@ -77,6 +79,7 @@
             this.btnRefresh.Text = "Refresh";
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            this.btnRefresh.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
             // 
             // label1
             // 
