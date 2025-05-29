@@ -31,7 +31,7 @@ namespace BankingSystem.Services
                 {
                     try
                     {
-                        // Update account balance
+                     
                         using (var updateCommand = new SQLiteCommand(
                             @"UPDATE Accounts 
                             SET Balance = Balance + @amount 
@@ -40,7 +40,7 @@ namespace BankingSystem.Services
                             updateCommand.Parameters.AddWithValue("@amount", amount);
                             updateCommand.Parameters.AddWithValue("@accountId", accountId);
 
-                            // Print the command with parameters for debugging
+                            
                             Console.WriteLine($"Executing: {updateCommand.CommandText}");
                             Console.WriteLine($"Parameters: amount={amount}, accountId={accountId}");
 
@@ -54,7 +54,7 @@ namespace BankingSystem.Services
                             }
                         }
 
-                        // Record transaction
+                        
                         RecordTransaction(connection, transaction, accountId, amount, "Deposit", description);
 
                         transaction.Commit();
@@ -105,7 +105,7 @@ namespace BankingSystem.Services
                             updateCommand.ExecuteNonQuery();
                         }
 
-                        // Record transaction
+                        
                         RecordTransaction(connection, dbTransaction, accountId, amount, "Withdrawal", description);
 
                         dbTransaction.Commit();
@@ -122,31 +122,50 @@ namespace BankingSystem.Services
 
         public bool Transfer(int fromAccountId, int toAccountId, decimal amount, string description = null)
         {
+            
             if (amount <= 0) return false;
+            if (fromAccountId == toAccountId) return false; 
 
             using (var connection = new SQLiteConnection(_dbHelper.ConnectionString))
             {
                 connection.Open();
+
+               
+                decimal fromBalance;
+                bool toAccountExists;
+
+                
+                using (var checkCommand = new SQLiteCommand(
+                    "SELECT Balance FROM Accounts WHERE AccountId = @accountId",
+                    connection))
+                {
+                    checkCommand.Parameters.AddWithValue("@accountId", fromAccountId);
+                    var result = checkCommand.ExecuteScalar();
+                    if (result == null) return false; 
+                    fromBalance = Convert.ToDecimal(result);
+                    if (fromBalance < amount) return false;
+                }
+
+               
+                using (var existsCommand = new SQLiteCommand(
+                    "SELECT 1 FROM Accounts WHERE AccountId = @accountId",
+                    connection))
+                {
+                    existsCommand.Parameters.AddWithValue("@accountId", toAccountId);
+                    toAccountExists = (existsCommand.ExecuteScalar() != null);
+                    if (!toAccountExists) return false;
+                }
+
+                
                 using (var dbTransaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        // Check sufficient balance in source account
-                        using (var checkCommand = new SQLiteCommand(
-                            "SELECT Balance FROM Accounts WHERE AccountId = @accountId",
-                            connection, dbTransaction))
-                        {
-                            checkCommand.Parameters.AddWithValue("@accountId", fromAccountId);
-                            var balance = Convert.ToDecimal(checkCommand.ExecuteScalar());
-
-                            if (balance < amount) return false;
-                        }
-
-                        // Withdraw from source account
+                        
                         using (var withdrawCommand = new SQLiteCommand(
                             @"UPDATE Accounts 
-                            SET Balance = Balance - @amount 
-                            WHERE AccountId = @accountId",
+                    SET Balance = Balance - @amount 
+                    WHERE AccountId = @accountId",
                             connection, dbTransaction))
                         {
                             withdrawCommand.Parameters.AddWithValue("@amount", amount);
@@ -154,11 +173,11 @@ namespace BankingSystem.Services
                             withdrawCommand.ExecuteNonQuery();
                         }
 
-                        // Deposit to target account
+                    
                         using (var depositCommand = new SQLiteCommand(
                             @"UPDATE Accounts 
-                            SET Balance = Balance + @amount 
-                            WHERE AccountId = @accountId",
+                    SET Balance = Balance + @amount 
+                    WHERE AccountId = @accountId",
                             connection, dbTransaction))
                         {
                             depositCommand.Parameters.AddWithValue("@amount", amount);
@@ -166,7 +185,7 @@ namespace BankingSystem.Services
                             depositCommand.ExecuteNonQuery();
                         }
 
-                        // Record transactions
+                       
                         RecordTransaction(connection, dbTransaction, fromAccountId, amount, "Transfer Out", description);
                         RecordTransaction(connection, dbTransaction, toAccountId, amount, "Transfer In", description);
 

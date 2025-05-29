@@ -68,14 +68,14 @@ namespace dashboard
             panel5.Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, panel5.Width, panel5.Height, 30, 30));
             if (_customer != null)
             {
-                // User information
+                
                 label11.Text = _customer.FirstName;
                 label4.Text = _customer.LastName;
                 label13.Text = _customer.Email;
                 label22.Text = _customer.Phone;
                 label23.Text = _customer.DateCreated.ToString();
 
-                // Account information
+                
                 string query = "SELECT AccountId, AccountType, Balance, DateOpened FROM Accounts WHERE CustomerId = @CustomerId";
 
                 using (var connection = new SQLiteConnection(_dbHelper.ConnectionString))
@@ -92,7 +92,7 @@ namespace dashboard
                             label7.Text = $"₱{Convert.ToDecimal(reader["Balance"]):0.00}";
                             label24.Text = reader["AccountId"].ToString();
 
-                            // Load transaction history after setting the account ID
+                           
                             LoadTransactionHistory();
                         }
                         else
@@ -149,7 +149,7 @@ namespace dashboard
             }
         }
 
-        private void button1_Click(object sender, EventArgs e) // Withdraw
+        private void button1_Click(object sender, EventArgs e) 
         {
             if (decimal.TryParse(textBox2.Text, out decimal amount))
             {
@@ -160,7 +160,7 @@ namespace dashboard
                     MessageBox.Show($"Successfully withdrew ₱{amount:0.00}", "Withdrawal Complete",
                                  MessageBoxButtons.OK, MessageBoxIcon.Information);
                     textBox2.Clear();
-                    RefreshAccountBalance(); // Implement this method to update balance display
+                    RefreshAccountBalance(); 
                     LoadTransactionHistory();
                 }
                 else
@@ -175,45 +175,48 @@ namespace dashboard
                              MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
-
         private void btntransfer_Click(object sender, EventArgs e)
         {
-            // You'll need to add UI elements for transfer (destination account and amount)
-            // For example, you might have:
-            // textBoxTransferAmount for the amount
-            // textBoxDestinationAccount for the target account ID
-
-            if (int.TryParse(textBox1.Text, out int targetAccountId) &&
-                decimal.TryParse(textBox3.Text, out decimal amount))
-            {
-                bool success = _transactionService.Transfer(
-                    _currentAccountId,
-                    targetAccountId,
-                    amount,
-                    $"Transfer to account {targetAccountId}");
-
-                if (success)
-                {
-                    MessageBox.Show($"Successfully transferred ₱{amount:0.00} to account {targetAccountId}",
-                                  "Transfer Complete",
-                                  MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    textBox1.Clear();
-                    textBox3.Clear();
-                    RefreshAccountBalance();
-                    LoadTransactionHistory();
-                }
-                else
-                {
-                    MessageBox.Show("Transfer failed. Insufficient funds or invalid accounts.",
-                                  "Error",
-                                  MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            }
-            else
+     
+            if (!int.TryParse(textBox1.Text, out int targetAccountId) ||
+                !decimal.TryParse(textBox3.Text, out decimal amount))
             {
                 MessageBox.Show("Please enter valid account number and amount",
                               "Invalid Input",
                               MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (targetAccountId == _currentAccountId)
+            {
+                MessageBox.Show("Can't transfer to own account",
+                              "Invalid Operation",
+                              MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+
+            bool success = _transactionService.Transfer(
+                _currentAccountId,
+                targetAccountId,
+                amount,
+                $"Transfer to account {targetAccountId}");
+
+            if (success)
+            {
+                MessageBox.Show($"Successfully transferred ₱{amount:0.00} to account {targetAccountId}",
+                              "Transfer Complete",
+                              MessageBoxButtons.OK, MessageBoxIcon.Information);
+                textBox1.Clear();
+                textBox3.Clear();
+                RefreshAccountBalance();
+                LoadTransactionHistory();
+            }
+            else
+            {
+                MessageBox.Show("Transfer failed. Insufficient funds or invalid accounts.",
+                              "Error",
+                              MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -232,7 +235,7 @@ namespace dashboard
                     if (result != null && result != DBNull.Value)
                     {
                         decimal balance = Convert.ToDecimal(result);
-                        label7.Text = balance.ToString("C", new System.Globalization.CultureInfo("en-PH")); // Format as currency
+                        label7.Text = balance.ToString("C", new System.Globalization.CultureInfo("en-PH")); 
 
                         // Optional: Change color based on balance
                         //label7.ForeColor = balance >= 0 ? Color.Green : Color.Red;
@@ -250,17 +253,17 @@ namespace dashboard
         {
             try
             {
-                // Get transactions for the current account
+                
                 var transactions = _transactionService.GetAccountTransactions(_currentAccountId);
 
-                // Bind to DataGridView
-                dataGridView1.AutoGenerateColumns = false; // We'll define columns manually for better control
+                
+                dataGridView1.AutoGenerateColumns = false; 
                 dataGridView1.DataSource = transactions;
 
-                // Clear existing columns if any
+                
                 dataGridView1.Columns.Clear();
 
-                // Add columns manually
+                
                 dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
                 {
                     DataPropertyName = "TransactionDate",
@@ -269,7 +272,7 @@ namespace dashboard
                     Width = 150,
                     DefaultCellStyle = new DataGridViewCellStyle()
                     {
-                        Format = "g" // General date/time pattern
+                        Format = "g" 
                     }
                 });
 
@@ -289,7 +292,7 @@ namespace dashboard
                     Width = 120,
                     DefaultCellStyle = new DataGridViewCellStyle()
                     {
-                        Format = "\"₱\"#,##0.00", // Custom format with ₱
+                        Format = "\"₱\"#,##0.00", 
                         Alignment = DataGridViewContentAlignment.MiddleRight,
                         NullValue = "₱0.00"
                     }
@@ -320,8 +323,7 @@ namespace dashboard
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            // Optional: Add input validation
-            // For example, prevent non-numeric input:
+        
             if (System.Text.RegularExpressions.Regex.IsMatch(textBox2.Text, "[^0-9.]"))
             {
                 textBox2.Text = textBox2.Text.Remove(textBox2.Text.Length - 1);

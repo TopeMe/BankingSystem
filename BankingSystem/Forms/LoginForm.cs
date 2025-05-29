@@ -45,29 +45,44 @@ namespace BankingSystem.Forms
         }
 
         private void btnlogin_Click(object sender, EventArgs e)
-
         {
             var username = emailtext.Text.Trim();
             var password = passwordtext.Text;
 
-            var dbHelper = new DatabaseHelper(); 
-            var authService = new AuthService(dbHelper);
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+            {
+                MessageBox.Show("Please enter both username and password.", "Input Required",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
+            var authService = new AuthService(_dbHelper);
             var (success, role, customer) = authService.Login(username, password);
 
             if (success)
             {
-                MessageBox.Show($"Login successful! Role: {role}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                Dashboard dashboard = new Dashboard(customer);
-                dashboard.Show();
                 this.Hide();
+
+                if (role == "Admin")
+                {
+                   
+                    var adminForm = new Admin(_dbHelper);
+                    adminForm.Show();
+                }
+                else
+                {
+                    
+                    var dashboard = new Dashboard(customer);
+                    dashboard.Show();
+                }
             }
             else
             {
-                MessageBox.Show("Invalid username or password.", "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Invalid username or password.", "Login Failed",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         private void LoginForm_Load(object sender, EventArgs e)
         {
