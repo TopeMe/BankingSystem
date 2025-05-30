@@ -281,8 +281,12 @@ namespace BankingSystem.Forms
             Label lblInitialDeposit = new Label() { Text = "Initial Deposit:", Left = 20, Top = 300, Width = 100 };
             NumericUpDown numInitialDeposit = new NumericUpDown() { Left = 150, Top = 300, Width = 250, Minimum = 0, Maximum = 1000000, DecimalPlaces = 2 };
 
-            Button btnCreate = new Button() { Text = "Create", Left = 150, Top = 350, Width = 100, DialogResult = DialogResult.OK };
-            Button btnCancel = new Button() { Text = "Cancel", Left = 270, Top = 350, Width = 100, DialogResult = DialogResult.Cancel };
+            Label lblStandingBalance = new Label() { Text = "Set standing balance:", Left = 20, Top = 330, Width = 100 };
+            ComboBox cmbStandingBalance = new ComboBox() { Left = 150, Top = 330, Width = 250 };
+            cmbStandingBalance.Items.AddRange(new string[] { "0", "5000" });
+
+            Button btnCreate = new Button() { Text = "Create", Left = 150, Top = 370, Width = 100, DialogResult = DialogResult.OK };
+            Button btnCancel = new Button() { Text = "Cancel", Left = 270, Top = 370, Width = 100, DialogResult = DialogResult.Cancel };
 
             
             createUserAccountForm.Controls.AddRange(new Control[] {
@@ -297,7 +301,8 @@ namespace BankingSystem.Forms
                 lblAccountType, cmbAccountType,
                 lblInitialDeposit, numInitialDeposit,
                 btnCreate, btnCancel,
-                lblEmailStatus, lblPhoneStatus, lblPasswordStatus
+                lblEmailStatus, lblPhoneStatus, lblPasswordStatus,
+                lblStandingBalance, cmbStandingBalance
             });
 
             mtxtPhone.Enter += (s, eventArgs) =>
@@ -437,13 +442,19 @@ namespace BankingSystem.Forms
 
                                 
                                 using (var accountCommand = new SQLiteCommand(
-                                    @"INSERT INTO Accounts (CustomerId, AccountType, Balance) 
-                              VALUES (@customerId, @accountType, @balance)",
+                                    @"INSERT INTO Accounts (CustomerId, AccountType, Balance, StandingBalance) 
+                              VALUES (@customerId, @accountType, @balance, @standingBalance)",
                                     connection, transaction))
                                 {
+                                    if (!int.TryParse(cmbStandingBalance.Text, out int standingBalance))
+                                    {
+                                
+                                        standingBalance = 0; 
+                                    }
                                     accountCommand.Parameters.AddWithValue("@customerId", newCustomerId);
                                     accountCommand.Parameters.AddWithValue("@accountType", cmbAccountType.Text);
                                     accountCommand.Parameters.AddWithValue("@balance", numInitialDeposit.Value);
+                                    accountCommand.Parameters.AddWithValue("@standingBalance", standingBalance);
                                     accountCommand.ExecuteNonQuery();
                                 }
 

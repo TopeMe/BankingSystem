@@ -41,6 +41,7 @@ namespace BankingSystem.Data
                     CustomerId INTEGER NOT NULL,
                     AccountType TEXT NOT NULL,
                     Balance DECIMAL(18,2) DEFAULT 0.00,
+                    StandingBalance DECIMAL(18,2) DEFAULT 0.00,
                     DateOpened TEXT DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (CustomerId) REFERENCES Customers(CustomerId) ON DELETE CASCADE
                 )");

@@ -389,8 +389,8 @@ namespace dashboard
                 return;
 
            
-            if (e.KeyChar == '.' && !txt.Text.Contains("."))
-                return;
+            //if (e.KeyChar == '.' && !txt.Text.Contains("."))
+            //    return;
 
             e.Handled = true;
         }
